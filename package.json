@@ -1,6 +1,6 @@
 {
   "name": "pgerd-to-drawio-diagram-converter",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Converts a Entity Relation Diagram that was exported from PgAdmin 5+ into an XML file that can be loaded into draw.io (diagrams.net) diagram editor",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,7 +10,21 @@
   },
   "author": "Bert Verhelst",
   "license": "MIT",
-  "keywords": ["pgadmin", "drawio", "diagram", "converter", "convert", "browser", "nodejs", "json", "tables", "erd", "entity relation diagram", "sql", "foreign keys"],
+  "keywords": [
+    "pgadmin",
+    "drawio",
+    "diagram",
+    "converter",
+    "convert",
+    "browser",
+    "nodejs",
+    "json",
+    "tables",
+    "erd",
+    "entity relation diagram",
+    "sql",
+    "foreign keys"
+  ],
   "homepage": "https://bertyhell.github.io/pgerd-to-drawio-diagram-converter",
   "repository": {
     "type": "git",
@@ -39,6 +53,7 @@
     "cytoscape-dagre": "^2.5.0",
     "cytoscape-euler": "^1.2.2",
     "jstoxml": "^3.2.6",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "uuid": "^11.1.0"
   }
 }

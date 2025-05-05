@@ -9,7 +9,7 @@ import cola from 'cytoscape-cola';
 
 // @ts-expect-error no typings exist
 import dagre from 'cytoscape-dagre';
-import { randomUuid } from './uuid-generator';
+import { v4 as uuidv4 } from 'uuid';
 
 cytoscape.use(cola);
 cytoscape.use(coseBilkent);
@@ -31,7 +31,7 @@ function mapLinkToEdge(link: DiagramLink, tableNodes: DiagramNode[]): ElementDef
 	if (sourceTable !== undefined && targetTable !== undefined) {
 		return {
 			data: {
-				id: randomUuid(),
+				id: uuidv4(),
 				source: sourceTable.otherInfo.data.schema + '.' + sourceTable.otherInfo.data.name,
 				target: targetTable.otherInfo.data.schema + '.' + targetTable.otherInfo.data.name,
 			},

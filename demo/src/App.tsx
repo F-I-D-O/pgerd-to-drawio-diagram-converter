@@ -13,7 +13,7 @@ function App(): ReactElement {
 		const drawIoXml = convertPgerdToDrawIo(pgerdDiagramJson);
 
 		const blob = new Blob([drawIoXml], { type: 'text/xml;charset=utf-8' });
-		saveAs(blob, 'diagram.drawio.xml');
+		saveAs(blob, (file?.name ?? 'diagram') + '.xml.drawio');
 	};
 
 	const handleConvertButtonClicked = (): void => {
