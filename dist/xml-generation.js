@@ -1,7 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateDrawIoDiagramXml = void 0;
-const uuid_generator_1 = require("./uuid-generator");
+const uuid_1 = require("uuid");
+const tableWidth = 300;
+const tableHeaderHeight = 45;
+const tableRowHeight = 30;
+const tableKeyCellWidth = 30;
+const tableDescCellWidth = tableWidth - tableKeyCellWidth;
 function generateTable(table, layoutedNode) {
     return [
         {
@@ -9,7 +14,7 @@ function generateTable(table, layoutedNode) {
             _attrs: {
                 id: table.otherInfo.data.schema + '.' + table.otherInfo.data.name,
                 value: table.otherInfo.data.schema + '.' + table.otherInfo.data.name,
-                style: 'shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=1;swimlaneLine=1;bottom=1;',
+                style: `shape=table;startSize=${tableRowHeight};container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=1;swimlaneLine=1;bottom=1;`,
                 parent: '1',
                 vertex: '1',
             },
@@ -19,8 +24,8 @@ function generateTable(table, layoutedNode) {
                     _attrs: {
                         x: layoutedNode.boundingbox().x1,
                         y: layoutedNode.boundingbox().y1,
-                        width: '300',
-                        height: table.otherInfo.data.columns.length * 30 + 45,
+                        width: tableWidth,
+                        height: table.otherInfo.data.columns.length * tableRowHeight + tableHeaderHeight,
                         as: 'geometry',
                     },
                 },
@@ -45,9 +50,9 @@ function generateRow(column, columnIndex, table) {
                 {
                     _name: 'mxGeometry',
                     _attrs: {
-                        y: String(30 * columnIndex),
-                        width: '250',
-                        height: '30',
+                        y: String(tableRowHeight * columnIndex + tableRowHeight),
+                        width: tableWidth,
+                        height: tableRowHeight,
                         as: 'geometry',
                     },
                 },
@@ -56,7 +61,7 @@ function generateRow(column, columnIndex, table) {
         {
             _name: 'mxCell',
             _attrs: {
-                id: (0, uuid_generator_1.randomUuid)(),
+                id: (0, uuid_1.v4)(),
                 value: column.is_pk ? 'PK' : column.is_fk ? 'FK' : '',
                 style: 'shape=partialRectangle;overflow=hidden;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;fontStyle=1;',
                 parent: rowId,
@@ -66,8 +71,8 @@ function generateRow(column, columnIndex, table) {
                 {
                     _name: 'mxGeometry',
                     _attrs: {
-                        width: '30',
-                        height: '30',
+                        width: tableKeyCellWidth,
+                        height: tableRowHeight,
                         as: 'geometry',
                     },
                 },
@@ -76,7 +81,7 @@ function generateRow(column, columnIndex, table) {
         {
             _name: 'mxCell',
             _attrs: {
-                id: (0, uuid_generator_1.randomUuid)(),
+                id: (0, uuid_1.v4)(),
                 value: column.name +
                     ' ' +
                     column.typname +
@@ -90,9 +95,9 @@ function generateRow(column, columnIndex, table) {
                 {
                     _name: 'mxGeometry',
                     _attrs: {
-                        x: '30',
-                        width: '220',
-                        height: '30',
+                        x: tableKeyCellWidth,
+                        width: tableDescCellWidth,
+                        height: tableRowHeight,
                         as: 'geometry',
                     },
                 },
@@ -113,7 +118,7 @@ function generateLink(link, tableNodes) {
         {
             _name: 'mxCell',
             _attrs: {
-                id: (0, uuid_generator_1.randomUuid)(),
+                id: (0, uuid_1.v4)(),
                 value: '',
                 style: 'edgeStyle=entityRelationEdgeStyle;endArrow=ERzeroToMany;startArrow=ERone;endFill=1;startFill=0;',
                 parent: '1',
@@ -172,7 +177,7 @@ function generateDrawIoDiagramXml(diagramNodesLayer, diagramLinksLayer, layouted
             modified: new Date().toISOString(),
             agent: '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
             etag: 'xz4sYTl0PLk-L4-nLoLk',
-            version: '20.8.20',
+            version: '26.2.2',
             type: 'google',
         },
         _content: {
@@ -184,8 +189,6 @@ function generateDrawIoDiagramXml(diagramNodesLayer, diagramLinksLayer, layouted
             _content: {
                 _name: 'mxGraphModel',
                 _attrs: {
-                    dx: '1357',
-                    dy: '858',
                     grid: '1',
                     gridSize: '10',
                     guides: '1',
@@ -195,8 +198,6 @@ function generateDrawIoDiagramXml(diagramNodesLayer, diagramLinksLayer, layouted
                     fold: '1',
                     page: '1',
                     pageScale: '1',
-                    pageWidth: '850',
-                    pageHeight: '1100',
                     math: '0',
                     shadow: '0',
                     extFonts: 'Permanent Marker^https://fonts.googleapis.com/css?family=Permanent+Marker',

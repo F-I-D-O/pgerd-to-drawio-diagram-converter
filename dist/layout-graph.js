@@ -11,7 +11,7 @@ const cytoscape_cose_bilkent_1 = __importDefault(require("cytoscape-cose-bilkent
 const cytoscape_cola_1 = __importDefault(require("cytoscape-cola"));
 // @ts-expect-error no typings exist
 const cytoscape_dagre_1 = __importDefault(require("cytoscape-dagre"));
-const uuid_generator_1 = require("./uuid-generator");
+const uuid_1 = require("uuid");
 cytoscape_1.default.use(cytoscape_cola_1.default);
 cytoscape_1.default.use(cytoscape_cose_bilkent_1.default);
 cytoscape_1.default.use(cytoscape_dagre_1.default);
@@ -30,7 +30,7 @@ function mapLinkToEdge(link, tableNodes) {
     if (sourceTable !== undefined && targetTable !== undefined) {
         return {
             data: {
-                id: (0, uuid_generator_1.randomUuid)(),
+                id: (0, uuid_1.v4)(),
                 source: sourceTable.otherInfo.data.schema + '.' + sourceTable.otherInfo.data.name,
                 target: targetTable.otherInfo.data.schema + '.' + targetTable.otherInfo.data.name,
             },
