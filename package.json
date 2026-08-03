@@ -4,6 +4,9 @@
   "description": "Converts a Entity Relation Diagram that was exported from PgAdmin 5+ into an XML file that can be loaded into draw.io (diagrams.net) diagram editor",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "pgerd-to-drawio": "dist/cli.js"
+  },
   "scripts": {
     "demo": "cd ./demo && npm run dev",
     "build": "rm -rf ./dist && tsc -p ./tsconfig.json"

@@ -6,6 +6,28 @@ Try it out on: https://bertyhell.github.io/pgerd-to-drawio-diagram-converter
 
 ![https://github.com/bertyhell/pgerd-to-drawio-diagram-converter/blob/main/images/manual.jpg](images/manual.jpg)
 
+## Command line interface
+
+Convert a file directly from the terminal without writing any code:
+
+```shell
+npx pgerd-to-drawio-diagram-converter ./diagram.pgerd
+```
+
+This writes the converted diagram next to the input file as `./diagram.drawio.xml`.
+Use `-o` / `--output` to pick a different output path:
+
+```shell
+npx pgerd-to-drawio-diagram-converter ./diagram.pgerd -o ./exports/diagram.drawio.xml
+```
+
+If you install the package (globally or as a dependency), the command is also available as `pgerd-to-drawio`:
+
+```shell
+npm install -g pgerd-to-drawio-diagram-converter
+pgerd-to-drawio ./diagram.pgerd
+```
+
 ## Programmatic interface
 
 Installation:
