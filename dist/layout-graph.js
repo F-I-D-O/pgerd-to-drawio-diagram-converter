@@ -85,6 +85,13 @@ function getGraphLayout(diagramNodes, diagramLinks) {
         numIter: 1000,
         animate: false,
     }).run();
-    return cy;
+    const positions = {};
+    cy.nodes().forEach((node) => {
+        const boundingBox = node.boundingbox();
+        positions[node.id()] = { x: boundingBox.x1, y: boundingBox.y1 };
+    });
+    // destroy the instance, otherwise its animation loop keeps the node event loop alive
+    cy.destroy();
+    return positions;
 }
 exports.getGraphLayout = getGraphLayout;

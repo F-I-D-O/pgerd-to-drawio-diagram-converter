@@ -1,3 +1,6 @@
 import { type DiagramLink, type DiagramNode } from './pgerd.types';
-import cytoscape from 'cytoscape';
-export declare function getGraphLayout(diagramNodes: DiagramNode[], diagramLinks: DiagramLink[]): cytoscape.Core;
+export type NodePositions = Record<string, {
+    x: number;
+    y: number;
+}>;
+export declare function getGraphLayout(diagramNodes: DiagramNode[], diagramLinks: DiagramLink[]): NodePositions;

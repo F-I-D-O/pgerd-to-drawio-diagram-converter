@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as fs from 'fs';
 import * as path from 'path';
-import { convertPgerdToDrawIo } from './converter';
+import { convertPgerdToDrawIo, type ConvertPgerdToDrawIoOptions } from './converter';
 import { type PgErdDiagramInfo } from './pgerd.types';
 
 const HELP = `Convert a PgAdmin ERD diagram (.pgerd) to a draw.io (diagrams.net) XML file.
@@ -12,6 +12,8 @@ Usage:
 Options:
   -o, --output <file>   Path of the output xml file
                         (default: input path with the extension replaced by .drawio.xml)
+  -l, --layout          Regenerate node positions using an automatic graph layout algorithm
+                        (default: preserve the positions from the pgerd file)
   -h, --help            Show this help message
   -v, --version         Show the version number
 `;
@@ -27,9 +29,14 @@ function getVersion(): string {
 	return packageJson.version;
 }
 
-function parseArgs(argv: string[]): { inputPath: string; outputPath: string } {
+function parseArgs(argv: string[]): {
+	inputPath: string;
+	outputPath: string;
+	options: ConvertPgerdToDrawIoOptions;
+} {
 	let inputPath: string | undefined;
 	let outputPath: string | undefined;
+	const options: ConvertPgerdToDrawIoOptions = {};
 
 	for (let i = 0; i < argv.length; i++) {
 		const arg = argv[i];
@@ -39,6 +46,8 @@ function parseArgs(argv: string[]): { inputPath: string; outputPath: string } {
 		} else if (arg === '-v' || arg === '--version') {
 			process.stdout.write(getVersion() + '\n');
 			process.exit(0);
+		} else if (arg === '-l' || arg === '--layout') {
+			options.regenerateLayout = true;
 		} else if (arg === '-o' || arg === '--output') {
 			outputPath = argv[++i];
 			if (outputPath === undefined) {
@@ -62,23 +71,19 @@ function parseArgs(argv: string[]): { inputPath: string; outputPath: string } {
 		outputPath = inputPath.slice(0, inputPath.length - extension.length) + '.drawio.xml';
 	}
 
-	return { inputPath, outputPath };
+	return { inputPath, outputPath, options };
 }
 
 function main(): void {
-	const { inputPath, outputPath } = parseArgs(process.argv.slice(2));
+	const { inputPath, outputPath, options } = parseArgs(process.argv.slice(2));
 
 	const pgerdJsonString = fs.readFileSync(inputPath, 'utf-8');
 	const pgerdJson = JSON.parse(pgerdJsonString) as PgErdDiagramInfo;
-	const drawIoXmlString = convertPgerdToDrawIo(pgerdJson);
+	const drawIoXmlString = convertPgerdToDrawIo(pgerdJson, options);
 
 	fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 	fs.writeFileSync(outputPath, drawIoXmlString);
 	process.stdout.write(`Written ${outputPath}\n`);
-
-	// The headless cytoscape instance created during layouting keeps the node
-	// event loop alive, so exit explicitly once the output file is written
-	process.exit(0);
 }
 
 main();

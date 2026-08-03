@@ -21,6 +21,13 @@ Use `-o` / `--output` to pick a different output path:
 npx pgerd-to-drawio-diagram-converter ./diagram.pgerd -o ./exports/diagram.drawio.xml
 ```
 
+By default the node positions from the pgerd file are preserved. Pass `-l` / `--layout` to
+regenerate the positions using an automatic graph layout algorithm instead:
+
+```shell
+npx pgerd-to-drawio-diagram-converter ./diagram.pgerd --layout
+```
+
 If you install the package (globally or as a dependency), the command is also available as `pgerd-to-drawio`:
 
 ```shell
@@ -51,6 +58,8 @@ const pgerdJsonString = fs.readFileSync('./diagram.pgerd').toString('utf-8');
 const pgerdJson = JSON.parse(pgerdJsonString);
 
 // Convert the json diagram info to a draw io xml format
+// By default the node positions from the pgerd file are preserved.
+// Pass {regenerateLayout: true} to regenerate them with an automatic graph layout algorithm.
 const drawIoXmlString = convertPgerdToDrawIo(pgerdJson);
 
 // Write the xml string to an xml file

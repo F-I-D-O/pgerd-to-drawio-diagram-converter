@@ -7,7 +7,7 @@ const tableHeaderHeight = 45;
 const tableRowHeight = 30;
 const tableKeyCellWidth = 30;
 const tableDescCellWidth = tableWidth - tableKeyCellWidth;
-function generateTable(table, layoutedNode) {
+function generateTable(table, position) {
     return [
         {
             _name: 'mxCell',
@@ -22,8 +22,8 @@ function generateTable(table, layoutedNode) {
                 {
                     _name: 'mxGeometry',
                     _attrs: {
-                        x: layoutedNode.boundingbox().x1,
-                        y: layoutedNode.boundingbox().y1,
+                        x: position.x,
+                        y: position.y,
                         width: tableWidth,
                         height: table.otherInfo.data.columns.length * tableRowHeight + tableHeaderHeight,
                         as: 'geometry',
@@ -158,11 +158,11 @@ function generateLink(link, tableNodes) {
         },
     ];
 }
-function generateDrawIoDiagramXml(diagramNodesLayer, diagramLinksLayer, layoutedGraph) {
+function generateDrawIoDiagramXml(diagramNodesLayer, diagramLinksLayer, nodePositions) {
     var _a;
     const tableDiagrams = Object.values(diagramNodesLayer.models);
     const tables = tableDiagrams.flatMap((table) => {
-        return generateTable(table, layoutedGraph.nodes('#' + table.otherInfo.data.schema + '.' + table.otherInfo.data.name));
+        return generateTable(table, nodePositions[table.otherInfo.data.schema + '.' + table.otherInfo.data.name]);
     });
     let links = [];
     if (diagramLinksLayer !== undefined) {

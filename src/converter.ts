@@ -5,9 +5,20 @@ import {
 } from './pgerd.types';
 import { toXML, type XmlElement } from 'jstoxml';
 import { generateDrawIoDiagramXml } from './xml-generation';
-import { getGraphLayout } from './layout-graph';
+import { getGraphLayout, type NodePositions } from './layout-graph';
 
-export function convertPgerdToDrawIo(pgDiagram: PgErdDiagramInfo): string {
+export interface ConvertPgerdToDrawIoOptions {
+	/**
+	 * When true, node positions are regenerated using an automatic graph layout algorithm.
+	 * By default the positions from the pgerd file are preserved.
+	 */
+	regenerateLayout?: boolean;
+}
+
+export function convertPgerdToDrawIo(
+	pgDiagram: PgErdDiagramInfo,
+	options: ConvertPgerdToDrawIoOptions = {}
+): string {
 	const diagramNodesLayer: DiagramNodesLayer | undefined = pgDiagram.data.layers.find(
 		(layer) => layer.type === 'diagram-nodes'
 	) as DiagramNodesLayer | undefined;
@@ -19,15 +30,28 @@ export function convertPgerdToDrawIo(pgDiagram: PgErdDiagramInfo): string {
 	if (diagramNodesLayer === undefined) {
 		throw new Error('No diagram nodes found');
 	} else {
-		const layoutedGraph = getGraphLayout(
-			Object.values(diagramNodesLayer.models),
-			Object.values(diagramLinksLayer?.models ?? {})
-		);
+		const diagramNodes = Object.values(diagramNodesLayer.models);
+
+		let nodePositions: NodePositions;
+		if (options.regenerateLayout === true) {
+			nodePositions = getGraphLayout(
+				diagramNodes,
+				Object.values(diagramLinksLayer?.models ?? {})
+			);
+		} else {
+			nodePositions = {};
+			diagramNodes.forEach((node) => {
+				nodePositions[node.otherInfo.data.schema + '.' + node.otherInfo.data.name] = {
+					x: node.x,
+					y: node.y,
+				};
+			});
+		}
 
 		const diagramXml: XmlElement = generateDrawIoDiagramXml(
 			diagramNodesLayer,
 			diagramLinksLayer,
-			layoutedGraph
+			nodePositions
 		);
 
 		return '<?xml version="1.0" encoding="UTF-8"?>' + toXML(diagramXml, { indent: '    ' });

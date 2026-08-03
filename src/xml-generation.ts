@@ -6,7 +6,7 @@ import {
 	type DiagramNodesLayer,
 } from './pgerd.types';
 import { type XmlElement } from 'jstoxml';
-import { type NodeCollection } from 'cytoscape';
+import { type NodePositions } from './layout-graph';
 import { v4 as uuidv4 } from 'uuid';
 
 const tableWidth = 300;
@@ -15,7 +15,7 @@ const tableRowHeight = 30;
 const tableKeyCellWidth = 30;
 const tableDescCellWidth = tableWidth - tableKeyCellWidth;
 
-function generateTable(table: DiagramNode, layoutedNode: NodeCollection): XmlElement[] {
+function generateTable(table: DiagramNode, position: { x: number; y: number }): XmlElement[] {
 	return [
 		{
 			_name: 'mxCell',
@@ -30,8 +30,8 @@ function generateTable(table: DiagramNode, layoutedNode: NodeCollection): XmlEle
 				{
 					_name: 'mxGeometry',
 					_attrs: {
-						x: layoutedNode.boundingbox().x1,
-						y: layoutedNode.boundingbox().y1,
+						x: position.x,
+						y: position.y,
 						width: tableWidth,
 						height: table.otherInfo.data.columns.length * tableRowHeight + tableHeaderHeight,
 						as: 'geometry',
@@ -181,13 +181,13 @@ function generateLink(link: DiagramLink, tableNodes: Record<string, DiagramNode>
 export function generateDrawIoDiagramXml(
 	diagramNodesLayer: DiagramNodesLayer,
 	diagramLinksLayer: DiagramLinksLayer | undefined,
-	layoutedGraph: cytoscape.Core
+	nodePositions: NodePositions
 ): XmlElement {
 	const tableDiagrams = Object.values(diagramNodesLayer.models);
 	const tables = tableDiagrams.flatMap((table): XmlElement[] => {
 		return generateTable(
 			table,
-			layoutedGraph.nodes('#' + table.otherInfo.data.schema + '.' + table.otherInfo.data.name)
+			nodePositions[table.otherInfo.data.schema + '.' + table.otherInfo.data.name]
 		);
 	});
 

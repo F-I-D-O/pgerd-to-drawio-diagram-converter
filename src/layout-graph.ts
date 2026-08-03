@@ -42,10 +42,12 @@ function mapLinkToEdge(link: DiagramLink, tableNodes: DiagramNode[]): ElementDef
 	}
 }
 
+export type NodePositions = Record<string, { x: number; y: number }>;
+
 export function getGraphLayout(
 	diagramNodes: DiagramNode[],
 	diagramLinks: DiagramLink[]
-): cytoscape.Core {
+): NodePositions {
 	const tableNodes: ElementDefinition[] = diagramNodes.map(mapTableToNode);
 	const linkEdges: ElementDefinition[] = diagramLinks
 		.map((link) => mapLinkToEdge(link, diagramNodes))
@@ -92,5 +94,14 @@ export function getGraphLayout(
 		animate: false,
 	} as any).run();
 
-	return cy;
+	const positions: NodePositions = {};
+	cy.nodes().forEach((node) => {
+		const boundingBox = node.boundingbox();
+		positions[node.id()] = { x: boundingBox.x1, y: boundingBox.y1 };
+	});
+
+	// destroy the instance, otherwise its animation loop keeps the node event loop alive
+	cy.destroy();
+
+	return positions;
 }

@@ -35,6 +35,8 @@ Usage:
 Options:
   -o, --output <file>   Path of the output xml file
                         (default: input path with the extension replaced by .drawio.xml)
+  -l, --layout          Regenerate node positions using an automatic graph layout algorithm
+                        (default: preserve the positions from the pgerd file)
   -h, --help            Show this help message
   -v, --version         Show the version number
 `;
@@ -50,6 +52,7 @@ function getVersion() {
 function parseArgs(argv) {
     let inputPath;
     let outputPath;
+    const options = {};
     for (let i = 0; i < argv.length; i++) {
         const arg = argv[i];
         if (arg === '-h' || arg === '--help') {
@@ -59,6 +62,9 @@ function parseArgs(argv) {
         else if (arg === '-v' || arg === '--version') {
             process.stdout.write(getVersion() + '\n');
             process.exit(0);
+        }
+        else if (arg === '-l' || arg === '--layout') {
+            options.regenerateLayout = true;
         }
         else if (arg === '-o' || arg === '--output') {
             outputPath = argv[++i];
@@ -83,18 +89,15 @@ function parseArgs(argv) {
         const extension = path.extname(inputPath);
         outputPath = inputPath.slice(0, inputPath.length - extension.length) + '.drawio.xml';
     }
-    return { inputPath, outputPath };
+    return { inputPath, outputPath, options };
 }
 function main() {
-    const { inputPath, outputPath } = parseArgs(process.argv.slice(2));
+    const { inputPath, outputPath, options } = parseArgs(process.argv.slice(2));
     const pgerdJsonString = fs.readFileSync(inputPath, 'utf-8');
     const pgerdJson = JSON.parse(pgerdJsonString);
-    const drawIoXmlString = (0, converter_1.convertPgerdToDrawIo)(pgerdJson);
+    const drawIoXmlString = (0, converter_1.convertPgerdToDrawIo)(pgerdJson, options);
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, drawIoXmlString);
     process.stdout.write(`Written ${outputPath}\n`);
-    // The headless cytoscape instance created during layouting keeps the node
-    // event loop alive, so exit explicitly once the output file is written
-    process.exit(0);
 }
 main();
