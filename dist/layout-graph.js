@@ -15,11 +15,11 @@ const uuid_1 = require("uuid");
 cytoscape_1.default.use(cytoscape_cola_1.default);
 cytoscape_1.default.use(cytoscape_cose_bilkent_1.default);
 cytoscape_1.default.use(cytoscape_dagre_1.default);
-function mapTableToNode(table) {
+function mapTableToNode(table, tableWidth) {
     return {
         data: {
             id: table.otherInfo.data.schema + '.' + table.otherInfo.data.name,
-            width: 300,
+            width: tableWidth,
             height: table.otherInfo.data.columns.length * 30 + 45,
         },
     };
@@ -41,8 +41,8 @@ function mapLinkToEdge(link, tableNodes) {
         return null;
     }
 }
-function getGraphLayout(diagramNodes, diagramLinks) {
-    const tableNodes = diagramNodes.map(mapTableToNode);
+function getGraphLayout(diagramNodes, diagramLinks, tableWidth) {
+    const tableNodes = diagramNodes.map((table) => mapTableToNode(table, tableWidth));
     const linkEdges = diagramLinks
         .map((link) => mapLinkToEdge(link, diagramNodes))
         .filter((edge) => edge !== null);

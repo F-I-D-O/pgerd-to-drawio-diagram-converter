@@ -1,4 +1,4 @@
-import { type DiagramLink, type DiagramNode } from './pgerd.types';
+import { type DiagramNode } from './pgerd.types';
 import cytoscape, { type ElementDefinition } from 'cytoscape';
 
 // @ts-expect-error no typings exist
@@ -15,17 +15,20 @@ cytoscape.use(cola);
 cytoscape.use(coseBilkent);
 cytoscape.use(dagre);
 
-function mapTableToNode(table: DiagramNode): ElementDefinition {
+function mapTableToNode(table: DiagramNode, tableWidth: number): ElementDefinition {
 	return {
 		data: {
 			id: table.otherInfo.data.schema + '.' + table.otherInfo.data.name,
-			width: 300,
+			width: tableWidth,
 			height: table.otherInfo.data.columns.length * 30 + 45,
 		},
 	};
 }
 
-function mapLinkToEdge(link: DiagramLink, tableNodes: DiagramNode[]): ElementDefinition | null {
+function mapLinkToEdge(
+	link: { source: string; target: string },
+	tableNodes: DiagramNode[]
+): ElementDefinition | null {
 	const sourceTable = tableNodes.find((table) => table.id === link.source);
 	const targetTable = tableNodes.find((table) => table.id === link.target);
 	if (sourceTable !== undefined && targetTable !== undefined) {
@@ -46,9 +49,12 @@ export type NodePositions = Record<string, { x: number; y: number }>;
 
 export function getGraphLayout(
 	diagramNodes: DiagramNode[],
-	diagramLinks: DiagramLink[]
+	diagramLinks: Array<{ source: string; target: string }>,
+	tableWidth: number
 ): NodePositions {
-	const tableNodes: ElementDefinition[] = diagramNodes.map(mapTableToNode);
+	const tableNodes: ElementDefinition[] = diagramNodes.map((table) =>
+		mapTableToNode(table, tableWidth)
+	);
 	const linkEdges: ElementDefinition[] = diagramLinks
 		.map((link) => mapLinkToEdge(link, diagramNodes))
 		.filter((edge: ElementDefinition | null) => edge !== null) as ElementDefinition[];

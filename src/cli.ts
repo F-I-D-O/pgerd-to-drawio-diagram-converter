@@ -14,6 +14,9 @@ Options:
                         (default: input path with the extension replaced by .drawio.xml)
   -l, --layout          Regenerate node positions using an automatic graph layout algorithm
                         (default: preserve the positions from the pgerd file)
+  -w, --table-width <px>  Width of the generated tables in pixels
+                        (default: 180, the fixed table width used by pgAdmin)
+  -n, --no-schema       Show only the table name in table headers, without the schema prefix
   -h, --help            Show this help message
   -v, --version         Show the version number
 `;
@@ -48,6 +51,18 @@ function parseArgs(argv: string[]): {
 			process.exit(0);
 		} else if (arg === '-l' || arg === '--layout') {
 			options.regenerateLayout = true;
+		} else if (arg === '-n' || arg === '--no-schema') {
+			options.hideSchema = true;
+		} else if (arg === '-w' || arg === '--table-width') {
+			const value = argv[++i];
+			if (value === undefined) {
+				fail(`Missing value for ${arg}`);
+			}
+			const tableWidth = Number(value);
+			if (!Number.isFinite(tableWidth) || tableWidth <= 0) {
+				fail(`Invalid value for ${arg}: ${value}`);
+			}
+			options.tableWidth = tableWidth;
 		} else if (arg === '-o' || arg === '--output') {
 			outputPath = argv[++i];
 			if (outputPath === undefined) {
@@ -83,7 +98,11 @@ function main(): void {
 
 	fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 	fs.writeFileSync(outputPath, drawIoXmlString);
-	process.stdout.write(`Written ${outputPath}\n`);
+	const tableCount = (drawIoXmlString.match(/shape=table/g) ?? []).length;
+	const connectionCount = (drawIoXmlString.match(/edge="1"/g) ?? []).length;
+	process.stdout.write(
+		`Written ${outputPath} (${tableCount} tables, ${connectionCount} connections)\n`
+	);
 }
 
 main();
